@@ -1,0 +1,35 @@
+{
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "@nestjs/common": "^10.2.6",
+    "@nestjs/swagger": "^7.1.12",
+    "jose": "^4.14.6",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "uuidv4": "^6.2.13"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "prepuplish": "npm run build"
+  },
+  "name": "nestjs-yc-yagw",
+  "version": "1.0.1",
+  "description": "This module generates Yandex API Gateway specification with extensions",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "rimraf": "^5.0.5",
+    "@types/node": "^20.7.0",
+    "typescript": "^5.2.2"
+  },
+  "keywords": [
+    "nestjs",
+    "nest",
+    "yandex",
+    "apigateway"
+  ],
+  "author": "he2lium",
+  "license": "ISC"
+}
