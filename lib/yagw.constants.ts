@@ -1,0 +1,1 @@
+export const YAGW_OPTIONS_TOKEN = "YAGW_OPTIONS_TOKEN"
