@@ -1,1 +1,1 @@
-# Yandex API Gateway swagger generator
+# Yandex Cloud API Gateway swagger generator

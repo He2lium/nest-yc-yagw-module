@@ -8,6 +8,6 @@ export const YagwJwtPayload = <PayloadType, ScopesEnum>() =>
     const payload = jose.decodeJwt(req.headers["authorization"].replace("Bearer ", "")) as YagwJwtPayloadType<PayloadType, ScopesEnum>;
     return {
       ...payload,
-      scopes: ((payload.scope as string).split(' ') as ScopesEnum[]) ?? []
+      scopes: ((payload.scope as string)?.split(' ') as ScopesEnum[]) ?? []
     };
   });
