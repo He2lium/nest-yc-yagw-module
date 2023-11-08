@@ -5,7 +5,7 @@ import {YagwModuleOptionsType, YagwModuleAsyncOptionsType} from "./types/yagw-mo
 import {YagwOperationOptionsType} from "./types/yagw-operation-options.type";
 import {ApiYagwOperation} from "./decorators/api-operation.decorator";
 import {YagwJwtPayloadType, YagwJwtPayload} from "./decorators/jwt-payload-param.decorator";
-import {AuthRoleMerger, AuthRoleType} from "./types/scope.type";
+import {YagwRoleMergerFactory, YagwRoleType} from "./types/scope.type";
 export {
     YagwModuleOptionsType,
     YagwOperationOptionsType,
@@ -16,6 +16,6 @@ export {
     YAGWTypes,
     YagwJwtPayload,
     YagwService,
-    AuthRoleType,
-    AuthRoleMerger
+    YagwRoleMergerFactory,
+    YagwRoleType
 }
