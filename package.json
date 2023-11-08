@@ -14,7 +14,7 @@
     "prepuplish": "npm run build"
   },
   "name": "nestjs-yc-yagw",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "This module generates Yandex API Gateway specification with extensions",
   "files": [
     "dist"
