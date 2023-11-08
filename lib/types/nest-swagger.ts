@@ -1,5 +1,3 @@
-import "@nestjs/swagger";
-
 export namespace YAGWTypes {
 
   export interface JWTSecuritySchema {
