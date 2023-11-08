@@ -1,4 +1,7 @@
-export type AuthRoleType<RoleEnum, ScopeEnum> = { [key in RoleEnum]: Array<ScopeEnum> }
+/**
+ * Example: AuthRoleType<typeof UserRole, Scopes>
+ */
+export type AuthRoleType<RoleEnum, ScopeEnum> = { [ key in keyof RoleEnum ]: Array<ScopeEnum> }
 
 export const AuthRoleMerger = (AuthRole: {[key: string]: string}) => (roles: string[], toString: boolean = false): string[] | string => {
     let scopes: string[] = []
