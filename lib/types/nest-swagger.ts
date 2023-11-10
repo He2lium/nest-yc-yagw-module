@@ -21,8 +21,9 @@ export namespace YAGWTypes {
   }
 
   export interface FunctionSecuritySchema {
-    type: "http"
-    scheme: "basic"
+    type: "apiKey"
+    in: "header"
+    name: string
     "x-yc-apigateway-authorizer":{
       type: "function",
       function_id: string,
