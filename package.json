@@ -16,7 +16,7 @@
     "publish": "npm publish"
   },
   "name": "nestjs-yc-yagw",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "This module generates Yandex API Gateway specification with extensions",
   "files": [
     "dist"
