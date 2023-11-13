@@ -10,8 +10,10 @@
     "uuidv4": "^6.2.13"
   },
   "scripts": {
+    "release": "rimraf dist && tsc && npm version patch && npm publish",
     "build": "rimraf dist && tsc",
-    "prepuplish": "npm run build"
+    "version_patch": "npm version patch",
+    "publish": "npm publish"
   },
   "name": "nestjs-yc-yagw",
   "version": "1.0.8",
