@@ -13,7 +13,7 @@
     "release": "rimraf dist && tsc && npm version patch && npm publish"
   },
   "name": "nestjs-yc-yagw",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "This module generates Yandex API Gateway specification with extensions",
   "files": [
     "dist"
