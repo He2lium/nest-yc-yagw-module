@@ -81,8 +81,20 @@ export class YagwService {
                                 instanceOptions.integrations[yagwPathOptionTokens.websocket.integration]
                                 :
                                 undefined
-                        doc.paths[pathUrl][`x-yc-apigateway-websocket-${yagwPathOptionTokens.websocket.type}`] =
-                            {"x-yc-apigateway-integration": integration}
+                        switch (integration?.type) {
+                            case "cloud_functions":
+                                doc.paths[pathUrl][`x-yc-apigateway-websocket-${yagwPathOptionTokens.websocket.type}`] =
+                                    {"x-yc-apigateway-integration": integration}
+                                break;
+                            case "http":
+                                doc.paths[pathUrl][`x-yc-apigateway-websocket-${yagwPathOptionTokens.websocket.type}`] =
+                                    {"x-yc-apigateway-integration": {...integration, url: `${integration.url}${pathUrl}`}}
+                                break;
+                            default:
+                                throw new Error(`Incorrect integration type`)
+
+                        }
+
                     } else {
                         // Responses
                         if (doc.paths[pathUrl][pathMethod].responses) {
