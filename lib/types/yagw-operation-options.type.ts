@@ -1,11 +1,4 @@
 
-export interface YagwOperationOptionsType {
-  integration?: string
-  securities?: {[securityToken: string]:Array<string>}
-  validator?: string
-  cors?: string
-}
-
 export enum WebsocketOperationType {
   connect = "connect",
   message = "message",
@@ -13,6 +6,12 @@ export enum WebsocketOperationType {
 }
 
 export interface YagwOperationOptionsType {
-  wsOperationType: WebsocketOperationType,
-  wsIntegration: string
+  integration?: string
+  securities?: {[securityToken: string]:Array<string>}
+  validator?: string
+  cors?: string,
+  websocket?: {
+    type: WebsocketOperationType,
+    integration: string
+  }
 }
