@@ -74,14 +74,14 @@ export class YagwService {
                 const yagwPathOptionTokens: YagwOperationOptionsType = YagwGlobalStorage.getMethodOptions(pathOperationId)
                 if (yagwPathOptionTokens) {
                     // Websocket methods by path
-                    if (yagwPathOptionTokens.wsOperationType && yagwPathOptionTokens.wsIntegration) {
+                    if (yagwPathOptionTokens.websocket) {
                         delete doc.paths[pathUrl][pathMethod]
                         const integration =
                             instanceOptions.integrations ?
-                                instanceOptions.integrations[yagwPathOptionTokens.wsIntegration]
+                                instanceOptions.integrations[yagwPathOptionTokens.websocket.integration]
                                 :
                                 undefined
-                        doc.paths[pathUrl][`x-yc-apigateway-websocket-${yagwPathOptionTokens.wsOperationType}`] =
+                        doc.paths[pathUrl][`x-yc-apigateway-websocket-${yagwPathOptionTokens.websocket.type}`] =
                             {"x-yc-apigateway-integration": integration}
                     } else {
                         // Responses
