@@ -10,10 +10,10 @@
     "uuidv4": "^6.2.13"
   },
   "scripts": {
-    "release": "rimraf dist && tsc && npm version patch && npm publish"
+    "release": "rimraf dist && tsc && npm version patch && git push && npm publish"
   },
   "name": "nestjs-yc-yagw",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "This module generates Yandex API Gateway specification with extensions",
   "files": [
     "dist"
