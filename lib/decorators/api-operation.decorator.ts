@@ -4,7 +4,7 @@ import {YagwOperationOptionsType} from "../types/yagw-operation-options.type";
 import {uuid} from "uuidv4";
 import {YagwGlobalStorage} from "../storage/yagw-storage.class";
 
-export const ApiYagwOperation = (YagwOptions:YagwOperationOptionsType, operation: Partial<OperationObject>) =>{
+export const YagwApiOperation = (YagwOptions:YagwOperationOptionsType, operation: Partial<OperationObject>) =>{
 
   const operationId = uuid()
   YagwGlobalStorage.addMethodOptions(operationId, YagwOptions)

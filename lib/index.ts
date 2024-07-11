@@ -1,21 +1,24 @@
 import {YagwModule} from "./yagw.module";
 import {YagwService} from "./yagw.service";
-import {YAGWTypes} from "./types/nest-swagger";
+import {YagwTypes} from "./types/nest-swagger";
 import {YagwModuleOptionsType, YagwModuleAsyncOptionsType} from "./types/yagw-module-options.type";
 import {YagwOperationOptionsType} from "./types/yagw-operation-options.type";
-import {ApiYagwOperation} from "./decorators/api-operation.decorator";
+import {YagwApiOperation} from "./decorators/api-operation.decorator";
 import {YagwJwtPayloadType, YagwJwtPayload} from "./decorators/jwt-payload-param.decorator";
 import {YagwRoleMergerFactory, YagwRoleType} from "./types/scope.type";
+import {YagwApiProperty} from "./decorators/api-property.decorator";
+
 export {
     YagwModuleOptionsType,
     YagwOperationOptionsType,
     YagwModuleAsyncOptionsType,
-    ApiYagwOperation,
+    YagwApiOperation,
     YagwJwtPayloadType,
     YagwModule,
-    YAGWTypes,
+    YagwTypes,
     YagwJwtPayload,
     YagwService,
     YagwRoleMergerFactory,
-    YagwRoleType
+    YagwRoleType,
+    YagwApiProperty
 }
