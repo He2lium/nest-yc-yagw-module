@@ -7,6 +7,9 @@ import {YagwApiOperation} from "./decorators/api-operation.decorator";
 import {YagwJwtPayloadType, YagwJwtPayload} from "./decorators/jwt-payload-param.decorator";
 import {YagwRoleMergerFactory, YagwRoleType} from "./types/scope.type";
 import {YagwApiProperty} from "./decorators/api-property.decorator";
+import { YagwWebsocketController } from "./decorators/websocket-controller.decorator";
+import { YagwWebsocketClassType } from "./types/yagw-websocket-class.type";
+import { YagwWebsocketMethodsEnum } from "./types/yagw-websocket-methods.enum";
 
 export {
     YagwModuleOptionsType,
@@ -20,5 +23,8 @@ export {
     YagwService,
     YagwRoleMergerFactory,
     YagwRoleType,
-    YagwApiProperty
+    YagwApiProperty,
+    YagwWebsocketController,
+    YagwWebsocketClassType,
+    YagwWebsocketMethodsEnum
 }

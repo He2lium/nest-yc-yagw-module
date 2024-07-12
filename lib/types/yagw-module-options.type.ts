@@ -15,6 +15,7 @@ export interface YagwModuleOptionsType {
   cors?: {[corsSchemaToken: string]: CORS}
   globalCORSToken?: string
   servers: string[]
+  extraPaths?: {[path: string]:object}
 }
 
 export type YagwModuleAsyncOptionsType =
