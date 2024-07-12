@@ -1,11 +1,11 @@
-import { YAGWTypes } from "./nest-swagger";
-import Validator = YAGWTypes.Validator;
-import CORS = YAGWTypes.CORS;
+import { YagwTypes } from "./nest-swagger";
+import Validator = YagwTypes.Validator;
+import CORS = YagwTypes.CORS;
 import {FactoryProvider, ModuleMetadata} from "@nestjs/common";
-import FunctionSecuritySchema = YAGWTypes.FunctionSecuritySchema;
-import CloudFunctionIntegration = YAGWTypes.CloudFunctionIntegration;
-import JWTSecuritySchema = YAGWTypes.JWTSecuritySchema;
-import HttpIntegration = YAGWTypes.HttpIntegration;
+import FunctionSecuritySchema = YagwTypes.FunctionSecuritySchema;
+import CloudFunctionIntegration = YagwTypes.CloudFunctionIntegration;
+import JWTSecuritySchema = YagwTypes.JWTSecuritySchema;
+import HttpIntegration = YagwTypes.HttpIntegration;
 
 export interface YagwModuleOptionsType {
   integrations?: { [integrationToken: string]: (CloudFunctionIntegration | HttpIntegration) }
@@ -15,6 +15,7 @@ export interface YagwModuleOptionsType {
   cors?: {[corsSchemaToken: string]: CORS}
   globalCORSToken?: string
   servers: string[]
+  extraPaths?: {[path: string]:object}
 }
 
 export type YagwModuleAsyncOptionsType =

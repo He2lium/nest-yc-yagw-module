@@ -1,4 +1,4 @@
-export namespace YAGWTypes {
+export namespace YagwTypes {
 
   export interface JWTSecuritySchema {
     type: "openIdConnect"

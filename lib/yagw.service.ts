@@ -1,15 +1,21 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { YagwModuleOptionsType } from "./types/yagw-module-options.type";
-import { InjectYagwOptions } from "./decorators/inject-yagw-options.decorator";
 import { OpenAPIObject } from "@nestjs/swagger";
 import { YagwGlobalStorage } from "./storage/yagw-storage.class";
 import { YagwOperationOptionsType } from "./types/yagw-operation-options.type";
+import { YAGW_OPTIONS_TOKEN } from "./yagw.constants";
+import { YagwWebsocketMethodsEnum } from "./types/yagw-websocket-methods.enum";
 
 @Injectable()
 export class YagwService {
-  constructor(@InjectYagwOptions() private options: YagwModuleOptionsType) {}
+  constructor(@Inject(YAGW_OPTIONS_TOKEN) private options: YagwModuleOptionsType) {
+  }
 
-  public postProcessing(originalDocument: OpenAPIObject) {
+  private _getIntegration(token: string) {
+    return this.options.integrations?.[token]
+  }
+
+  public postProcessing(originalDocument: OpenAPIObject, globalPrefix?: string) {
     let doc = originalDocument as OpenAPIObject & any;
     const instanceOptions = this.options;
 
@@ -19,26 +25,34 @@ export class YagwService {
     if (!doc.components) doc.components = {};
 
     // Add security schemas
-    for (let securitySchemaToken in instanceOptions.securities) {
+    for (let componentName in instanceOptions.securities) {
       if (!doc.components.securitySchemes) doc.components.securitySchemes = {};
-      doc.components.securitySchemes[securitySchemaToken] =
-        instanceOptions.securities[securitySchemaToken];
+      doc.components.securitySchemes[componentName] =
+        instanceOptions.securities[componentName];
     }
 
     // Add validators
-    for (let validatorSchemaToken in instanceOptions.validators) {
+    for (let componentName in instanceOptions.validators) {
       if (!doc.components["x-yc-apigateway-validators"])
         doc.components["x-yc-apigateway-validators"] = {};
-      doc.components["x-yc-apigateway-validators"][validatorSchemaToken] =
-        instanceOptions.validators[validatorSchemaToken];
+      doc.components["x-yc-apigateway-validators"][componentName] =
+        instanceOptions.validators[componentName];
     }
 
     // Add CORS rules
-    for (let corsSchemaToken in instanceOptions.cors) {
+    for (let componentName in instanceOptions.cors) {
       if (!doc.components["x-yc-apigateway-cors-rules"])
         doc.components["x-yc-apigateway-cors-rules"] = {};
-      doc.components["x-yc-apigateway-cors-rules"][corsSchemaToken] =
-        instanceOptions.cors[corsSchemaToken];
+      doc.components["x-yc-apigateway-cors-rules"][componentName] =
+        instanceOptions.cors[componentName];
+    }
+
+    // Add integrations
+    for (let componentName in instanceOptions.integrations) {
+      if (!doc.components["x-yc-apigateway-integrations"])
+        doc.components["x-yc-apigateway-integrations"] = {};
+      doc.components["x-yc-apigateway-integrations"][componentName] =
+        instanceOptions.integrations[componentName];
     }
 
     /**
@@ -55,14 +69,14 @@ export class YagwService {
     if (!doc["x-yc-apigateway"]) doc["x-yc-apigateway"] = {};
     if (instanceOptions.globalCORSToken) {
       doc["x-yc-apigateway"]["cors"] = {
-        $ref: `#/components/x-yc-apigateway-cors-rules/${instanceOptions.globalCORSToken}`,
+        $ref: `#/components/x-yc-apigateway-cors-rules/${instanceOptions.globalCORSToken}`
       };
     }
 
     // Add global validator
     if (instanceOptions.globalValidatorToken) {
       doc["x-yc-apigateway"]["validator"] = {
-        $ref: `#/components/x-yc-apigateway-validators/${instanceOptions.globalValidatorToken}`,
+        $ref: `#/components/x-yc-apigateway-validators/${instanceOptions.globalValidatorToken}`
       };
     }
 
@@ -81,65 +95,31 @@ export class YagwService {
         const yagwPathOptionTokens: YagwOperationOptionsType =
           YagwGlobalStorage.getMethodOptions(pathOperationId);
         if (yagwPathOptionTokens) {
-          // Websocket methods by path
-          if (yagwPathOptionTokens.websocket) {
-            const integration = instanceOptions.integrations
-              ? instanceOptions.integrations[
-                  yagwPathOptionTokens.websocket.integration
-                ]
-              : undefined;
-            switch (integration?.type) {
-              case "cloud_functions":
-                doc.paths[pathUrl][
-                  `x-yc-apigateway-websocket-${yagwPathOptionTokens.websocket.type}`
-                ] = {
-                  ...doc.paths[pathUrl][pathMethod],
-                  "x-yc-apigateway-integration": integration,
-                };
-                break;
-              case "http":
-                doc.paths[pathUrl][
-                  `x-yc-apigateway-websocket-${yagwPathOptionTokens.websocket.type}`
-                ] = {
-                  ...doc.paths[pathUrl][pathMethod],
-                  "x-yc-apigateway-integration": {
-                    ...integration,
-                    url: `${integration.url}${pathUrl}`,
-                  },
-                };
-                break;
-              default:
-                throw new Error(`Incorrect integration type`);
-            }
-            delete doc.paths[pathUrl][pathMethod];
-          } else {
-            // Responses
-            if (doc.paths[pathUrl][pathMethod].responses) {
-              for (let status in doc.paths[pathUrl][pathMethod].responses) {
-                doc.paths[pathUrl][pathMethod].responses[status].description =
-                  "Response" +
-                  doc.paths[pathUrl][pathMethod].responses[status].description;
-              }
+          // Responses
+          if (doc.paths[pathUrl][pathMethod].responses) {
+            for (let status in doc.paths[pathUrl][pathMethod].responses) {
+              doc.paths[pathUrl][pathMethod].responses[status].description =
+                "Response" +
+                doc.paths[pathUrl][pathMethod].responses[status].description;
             }
 
             // Integration
             if (yagwPathOptionTokens.integration) {
-              const integration = instanceOptions.integrations
-                ? instanceOptions.integrations[yagwPathOptionTokens.integration]
-                : undefined;
-
+              const integration = this._getIntegration(yagwPathOptionTokens.integration)
               switch (integration?.type) {
                 case "cloud_functions":
                   doc.paths[pathUrl][pathMethod][
                     "x-yc-apigateway-integration"
-                  ] = integration;
+                    ] = {
+                    $ref: `#/components/x-yc-apigateway-integrations/${yagwPathOptionTokens.integration}`
+                  };
                   break;
                 case "http":
                   doc.paths[pathUrl][pathMethod][
                     "x-yc-apigateway-integration"
-                  ] = {
-                    ...integration,
-                    url: `${integration.url}${pathUrl}`,
+                    ] = {
+                    $ref: `#/components/x-yc-apigateway-integrations/${yagwPathOptionTokens.integration}`,
+                    url: `${integration.url}${pathUrl}`
                   };
                   break;
                 default:
@@ -163,7 +143,7 @@ export class YagwService {
               // Add security
               doc.paths[pathUrl][pathMethod].security.push({
                 [`${securityToken}`]:
-                  yagwPathOptionTokens.securities[securityToken],
+                  yagwPathOptionTokens.securities[securityToken]
               });
             }
 
@@ -175,7 +155,7 @@ export class YagwService {
 
               if (!validator) throw new Error("Validator not found");
               doc.paths[pathUrl][pathMethod]["x-yc-apigateway-validator"] = {
-                $ref: `#/components/x-yc-apigateway-validators/${yagwPathOptionTokens.validator}`,
+                $ref: `#/components/x-yc-apigateway-validators/${yagwPathOptionTokens.validator}`
               };
             }
 
@@ -187,7 +167,7 @@ export class YagwService {
 
               if (!cors) throw new Error("CORS not found");
               doc.paths[pathUrl][pathMethod]["x-yc-apigateway-cors"] = {
-                $ref: `#/components/x-yc-apigateway-cors-rules/${yagwPathOptionTokens.cors}`,
+                $ref: `#/components/x-yc-apigateway-cors-rules/${yagwPathOptionTokens.cors}`
               };
             }
           }
@@ -206,6 +186,34 @@ export class YagwService {
           delete doc.components.schemas[schemaName];
       }
     }
+
+    // Websocket paths
+    if(YagwGlobalStorage.websocketConfig){
+      const {path, integrationToken} = YagwGlobalStorage.websocketConfig
+      const wsPath:object = {}
+      const integration = this._getIntegration(integrationToken)
+      if(!integration || integration.type !== "http")
+        throw new Error('Integration for websocket not found or has incorrect type');
+      for (let method of Object.values(YagwWebsocketMethodsEnum)){
+        wsPath[`x-yc-apigateway-websocket-${method}`] = {
+          "x-yc-apigateway-integration": {
+            $ref: `#/components/x-yc-apigateway-integrations/${integrationToken}`,
+            url: `${integration.url}/${globalPrefix ? globalPrefix + "/":""}${path}`
+          }
+        }
+      }
+      doc.paths = {
+        [`/${globalPrefix ? globalPrefix + "/":""}${path}`]:wsPath,
+        ...doc.paths
+      }
+    }
+
+    // Extra paths from config
+    if (this.options.extraPaths)
+      doc.paths = {
+        ...this.options.extraPaths,
+        ...doc.paths
+      };
 
     return doc;
   }
