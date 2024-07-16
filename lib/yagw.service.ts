@@ -28,7 +28,7 @@ export class YagwService {
     for (let componentName in instanceOptions.securities) {
       if (!doc.components.securitySchemes) doc.components.securitySchemes = {};
       doc.components.securitySchemes[componentName] =
-        instanceOptions.securities[componentName];
+          instanceOptions.securities[componentName];
     }
 
     // Add validators
@@ -36,7 +36,7 @@ export class YagwService {
       if (!doc.components["x-yc-apigateway-validators"])
         doc.components["x-yc-apigateway-validators"] = {};
       doc.components["x-yc-apigateway-validators"][componentName] =
-        instanceOptions.validators[componentName];
+          instanceOptions.validators[componentName];
     }
 
     // Add CORS rules
@@ -44,7 +44,7 @@ export class YagwService {
       if (!doc.components["x-yc-apigateway-cors-rules"])
         doc.components["x-yc-apigateway-cors-rules"] = {};
       doc.components["x-yc-apigateway-cors-rules"][componentName] =
-        instanceOptions.cors[componentName];
+          instanceOptions.cors[componentName];
     }
 
     // Add integrations
@@ -52,7 +52,7 @@ export class YagwService {
       if (!doc.components["x-yc-apigateway-integrations"])
         doc.components["x-yc-apigateway-integrations"] = {};
       doc.components["x-yc-apigateway-integrations"][componentName] =
-        instanceOptions.integrations[componentName];
+          instanceOptions.integrations[componentName];
     }
 
     /**
@@ -93,14 +93,14 @@ export class YagwService {
 
         // Looking for operation ID in YAGW global storage
         const yagwPathOptionTokens: YagwOperationOptionsType =
-          YagwGlobalStorage.getMethodOptions(pathOperationId);
+            YagwGlobalStorage.getMethodOptions(pathOperationId);
         if (yagwPathOptionTokens) {
           // Responses
           if (doc.paths[pathUrl][pathMethod].responses) {
             for (let status in doc.paths[pathUrl][pathMethod].responses) {
               doc.paths[pathUrl][pathMethod].responses[status].description =
-                "Response" +
-                doc.paths[pathUrl][pathMethod].responses[status].description;
+                  "Response" +
+                  doc.paths[pathUrl][pathMethod].responses[status].description;
             }
 
             // Integration
@@ -109,15 +109,15 @@ export class YagwService {
               switch (integration?.type) {
                 case "cloud_functions":
                   doc.paths[pathUrl][pathMethod][
-                    "x-yc-apigateway-integration"
-                    ] = {
+                      "x-yc-apigateway-integration"
+                      ] = {
                     $ref: `#/components/x-yc-apigateway-integrations/${yagwPathOptionTokens.integration}`
                   };
                   break;
                 case "http":
                   doc.paths[pathUrl][pathMethod][
-                    "x-yc-apigateway-integration"
-                    ] = {
+                      "x-yc-apigateway-integration"
+                      ] = {
                     $ref: `#/components/x-yc-apigateway-integrations/${yagwPathOptionTokens.integration}`,
                     url: `${integration.url}${pathUrl}`
                   };
@@ -131,8 +131,8 @@ export class YagwService {
             for (let securityToken in yagwPathOptionTokens.securities) {
               // Get integration source object from module instance
               const security = instanceOptions.securities
-                ? instanceOptions.securities[securityToken]
-                : undefined;
+                  ? instanceOptions.securities[securityToken]
+                  : undefined;
 
               if (!security) throw new Error("Security not found");
 
@@ -143,15 +143,15 @@ export class YagwService {
               // Add security
               doc.paths[pathUrl][pathMethod].security.push({
                 [`${securityToken}`]:
-                  yagwPathOptionTokens.securities[securityToken]
+                    yagwPathOptionTokens.securities[securityToken]
               });
             }
 
             // Validator
             if (yagwPathOptionTokens.validator) {
               const validator = instanceOptions.validators
-                ? instanceOptions.validators[yagwPathOptionTokens.validator]
-                : undefined;
+                  ? instanceOptions.validators[yagwPathOptionTokens.validator]
+                  : undefined;
 
               if (!validator) throw new Error("Validator not found");
               doc.paths[pathUrl][pathMethod]["x-yc-apigateway-validator"] = {
@@ -162,8 +162,8 @@ export class YagwService {
             // CORS
             if (yagwPathOptionTokens.cors) {
               const cors = instanceOptions.cors
-                ? instanceOptions.cors[yagwPathOptionTokens.cors]
-                : undefined;
+                  ? instanceOptions.cors[yagwPathOptionTokens.cors]
+                  : undefined;
 
               if (!cors) throw new Error("CORS not found");
               doc.paths[pathUrl][pathMethod]["x-yc-apigateway-cors"] = {
@@ -194,6 +194,16 @@ export class YagwService {
       const integration = this._getIntegration(integrationToken)
       if(!integration || integration.type !== "http")
         throw new Error('Integration for websocket not found or has incorrect type');
+      wsPath["parameters"] = [
+        {
+          "name": "token",
+          "required": false,
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
       for (let method of Object.values(YagwWebsocketMethodsEnum)){
         wsPath[`x-yc-apigateway-websocket-${method}`] = {
           "x-yc-apigateway-integration": {
@@ -202,6 +212,7 @@ export class YagwService {
           }
         }
       }
+
       doc.paths = {
         [`/${globalPrefix ? globalPrefix + "/":""}${path}`]:wsPath,
         ...doc.paths
